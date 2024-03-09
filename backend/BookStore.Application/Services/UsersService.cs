@@ -19,11 +19,13 @@ namespace BookStore.Application.Services
 			_usersRepository = usersRepository;
 			_jwtProvider = jwtProvider ?? throw new ArgumentNullException(nameof(jwtProvider));
 		}
-		public async Task Register(string userName, string email, string password)
+		//Убрать вход параметр userRole
+		public async Task Register(string userName, string email, string password, int userRole)
 		{
 			var hashPassword = _passwordHasher.Generate(password);
 
-			var user = User.Create(Guid.NewGuid(), userName, hashPassword, email);
+			int defaultUserRole = 2;
+			var user = User.Create(Guid.NewGuid(), userName, hashPassword, email, defaultUserRole);
 
 			await _usersRepository.Add(user);
 		}

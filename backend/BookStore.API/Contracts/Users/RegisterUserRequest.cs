@@ -5,5 +5,6 @@ namespace BookStore.API.Contracts.Users
 	public record RegisterUserRequest(
 		[Required] string userName,
 		[Required] string email,
-		[Required] string password);
+		[Required] string password,
+		[Required] int userRole);
 }

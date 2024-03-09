@@ -9,5 +9,6 @@ public class MapProfle : Profile
 	public MapProfle()
 	{
 		CreateMap<UserEntity, User>().ReverseMap();
+		CreateMap<RolesEntity, UserRoles>().ReverseMap();
 	}
 }

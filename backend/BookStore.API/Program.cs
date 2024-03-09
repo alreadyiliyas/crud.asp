@@ -7,6 +7,8 @@ using AutoMapper;
 using BookStore.API.Endpoints;
 using Microsoft.Extensions.Options;
 using BookStore.DataAccess.Profiles;
+using BookStore.API.Extensions;
+using BookStore.Infrastructure.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +24,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<BookStoreDbContext>(
 	options =>
 	{
-		options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(BookStoreDbContext)));
+		options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(BookStoreDbContext)),
+		x => x.MigrationsAssembly("BookStore.DataAccess"));
 	});
 
 
@@ -34,8 +37,8 @@ builder.Services.AddScoped<UsersService>();
 
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
-
-
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
+builder.Services.AddApiAuthentication(builder.Configuration);	
 builder.Services.AddAutoMapper(typeof(MapProfle));
 
 var app = builder.Build();
@@ -46,8 +49,20 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+//app.UseMiddleware<ExceptionMiddleware>();
+
 app.UseHttpsRedirection();
 
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+	MinimumSameSitePolicy = SameSiteMode.Strict,
+	HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always,
+	Secure = CookieSecurePolicy.Always
+});
+
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapUsersEndpoints();
@@ -58,5 +73,10 @@ app.UseCors(x =>
 	x.WithOrigins("http://localhost:3000");
 	x.WithMethods().AllowAnyMethod();
 });
+
+app.MapGet("get", () =>
+{
+	return Results.Ok("ok");
+}).RequireAuthorization("AdminPolicy");
 
 app.Run();

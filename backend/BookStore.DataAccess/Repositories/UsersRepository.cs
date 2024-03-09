@@ -23,12 +23,14 @@ namespace BookStore.DataAccess.Repositories
 				Id = user.Id,
 				UserName = user.UserName,
 				PasswordHash = user.PasswordHash,
-				Email = user.Email
+				Email = user.Email,
+				UserRoleId = user.UserRoleId // Присвоение объекта RolesEntity
 			};
 
 			await _context.Users.AddAsync(userEntity);
 			await _context.SaveChangesAsync();
 		}
+
 
 		public async Task<User> GetByEmail(string email)
 		{

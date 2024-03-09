@@ -44,6 +44,23 @@ namespace BookStore.DataAccess.Migrations
                     b.ToTable("Books");
                 });
 
+            modelBuilder.Entity("BookStore.DataAccess.Entities.RolesEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
             modelBuilder.Entity("BookStore.DataAccess.Entities.UserEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -62,9 +79,25 @@ namespace BookStore.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("UserRoleId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("UserRoleId");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("BookStore.DataAccess.Entities.UserEntity", b =>
+                {
+                    b.HasOne("BookStore.DataAccess.Entities.RolesEntity", "Roles")
+                        .WithMany()
+                        .HasForeignKey("UserRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,6 +1,7 @@
 ﻿using BookStore.API.Contracts;
 using BookStore.Application.Services;
 using BookStore.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using newBookStore.API.Contracts;
 
@@ -8,6 +9,7 @@ namespace newBookStore.API.Controllers
 {
 	[ApiController]
 	[Route("[controller]")]
+	[Authorize]
 	public class BooksController : ControllerBase
 	{
 		private readonly IBooksServices _booksServices;
